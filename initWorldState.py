@@ -132,8 +132,8 @@ for state in remainStates:
         stateData = {
             'state': state['state'],
             'country': state['country'],
-            'statecode': state['stateId'][5:7],
-            'countrycode': state['stateId'][8:].strip(),
+            'statecode': state['stateId'][8:].strip(),
+            'countrycode': state['stateId'][5:7],
             'latitude': state['coordinates'][0],
             'longitude': state['coordinates'][1]
         }
