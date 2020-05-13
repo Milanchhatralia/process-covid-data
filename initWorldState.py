@@ -105,58 +105,86 @@ if data:
 
 
 remainStates = []
+print("##### Pushing states and county from "+cs+"coronadatascraper.com"+ce)
 
 for item in data:
     if item['level'] == 'state':
-        remainStates.append(item)
-        pass
-    pass
-
-print("##### Pushing remining states from "+cs+"coronadatascraper.com"+ce)
-for state in remainStates:
-    present = False
-    searchState = state['state'].strip()
-    r = re.compile(" ?"+searchState+" ?")
-    # newlist = list(filter(r.match, worldStateAdded))
-    if list(filter(r.match, worldStateAdded)):
-        present = True
+        # remainStates.append(item)
+        present = False
+        searchState = item['state'].strip()
+        r = re.compile(" ?"+searchState+" ?")
+        if list(filter(r.match, worldStateAdded)):
+            present = True
+            pass
+        
+        if not present and item['countryId'][5:] not in 'IN':
+            stateData = {
+                'state': item['state'],
+                'country': item['country'],
+                'statecode': item['stateId'][8:].strip(),
+                'countrycode': item['stateId'][5:7],
+                'latitude': item['coordinates'][0],
+                'longitude': item['coordinates'][1]
+            }
+            if 'deaths' in item:
+                stateData['deaths'] = item['deaths']
+                pass
+            if 'cases' in item:
+                stateData['confirmed'] = item['cases']
+                pass
+            if 'hospitalized' in item:
+                stateData['active'] = item['hospitalized']
+                pass
+            if 'active' in item:
+                stateData['active'] = item['active']
+                pass
+            if 'discharged' in item:
+                stateData['recovered'] = item['discharged']
+                pass
+            if 'recovered' in item:
+                stateData['recovered'] = item['recovered']
+                pass
+            stateCollection.insert_one(stateData)
+            print("State: "+stateData['state'])
+            pass
         pass
     
-    # for allstate in allStates:
-    #     if state['state'] in allstate['location'] or allstate['location'] in state['state']:
-    #         present = True
-    #         pass
-    #     pass
-    
-    if not present and state['countryId'][5:] not in 'IN':
-        stateData = {
-            'state': state['state'],
-            'country': state['country'],
-            'statecode': state['stateId'][8:].strip(),
-            'countrycode': state['stateId'][5:7],
-            'latitude': state['coordinates'][0],
-            'longitude': state['coordinates'][1]
+    elif item['level'] == 'county':
+        if '-' in item['countyId']:
+            countyID = str(item['countyId'][item['countyId'].index('-')+1:].strip()),
+            pass
+        elif ':' in item['countyId']:
+            countyID = str(item['countyId'][item['countyId'].index(':')+1:].strip()),
+            pass
+        countyData = {
+            'county': item['county'],
+            'country': item['country'],
+            'countycode': countyID,
+            'statecode': item['stateId'][8:].strip(),
+            'countrycode': item['stateId'][5:7],
+            'latitude': item['coordinates'][0],
+            'longitude': item['coordinates'][1]
         }
-        if 'deaths' in state:
-            stateData['deaths'] = state['deaths']
+        if 'deaths' in item:
+            countyData['deaths'] = item['deaths']
             pass
-        if 'cases' in state:
-            stateData['confirmed'] = state['cases']
+        if 'cases' in item:
+            countyData['confirmed'] = item['cases']
             pass
-        if 'hospitalized' in state:
-            stateData['active'] = state['hospitalized']
+        if 'hospitalized' in item:
+            countyData['active'] = item['hospitalized']
             pass
-        if 'active' in state:
-            stateData['active'] = state['active']
+        if 'active' in item:
+            countyData['active'] = item['active']
             pass
-        if 'discharged' in state:
-            stateData['recovered'] = state['discharged']
+        if 'discharged' in item:
+            countyData['recovered'] = item['discharged']
             pass
-        if 'recovered' in state:
-            stateData['recovered'] = state['recovered']
+        if 'recovered' in item:
+            countyData['recovered'] = item['recovered']
             pass
-        stateCollection.insert_one(stateData)
-        print("State: "+stateData['state'])
+        stateCollection.insert_one(countyData)
+        print("County: "+countyData['county'])
         pass
     pass
 
