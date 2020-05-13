@@ -11,46 +11,48 @@ db = client['covid-live']
 cityCollection = db['city-test']
 mainCollection = db['city-main']
 
-# Delete all documents from collection
-delete = cityCollection.delete_many({})
-print("##### "+ cs + str(delete.deleted_count) + ce +" Documents deleted from "+ cs + str(cityCollection.name + ce))
+# Collecting all city data
+allCities = []
 
 # Get all cities
+print("##### Fetching data from "+cs+"trackcorona.live/api/cities"+ce+"...")
 req = Request('https://www.trackcorona.live/api/cities', headers={'User-Agent': 'Mozilla/5.0','Content-Type': 'application/json'})
-allCities = json.loads(urlopen(req).read())
-allCities = allCities['data']
-if allCities:
+citiesData = json.loads(urlopen(req).read())
+citiesData = citiesData['data']
+if citiesData:
     print("##### Got data from "+cs+"trackcorona.live/api/cities"+ce+" as collection")
     pass
 
-for city in allCities:
-    cityData = {
-        'countrycode': city['country_code'],
-        'confirmed': city['confirmed'],
-        'deaths': city['dead'],
-        'recovered': city['recovered'],
-        'updated': city['updated'][:19]
-    }
-    
-    if ',' in city['location']:
-        cityData['city'] = city['location'].partition(',')[0].strip()
-        cityData['state'] = city['location'].partition(',')[2].strip()
+for city in citiesData:
+    if city['country_code'] not in 'in':
+        cityData = {
+            'countrycode': city['country_code'],
+            'confirmed': city['confirmed'],
+            'deaths': city['dead'],
+            'recovered': city['recovered'],
+            'updated': city['updated'][:19]
+        }
+        
+        if ',' in city['location']:
+            cityData['city'] = city['location'].partition(',')[0].strip()
+            cityData['state'] = city['location'].partition(',')[2].strip()
+            pass
+        else:
+            cityData['city'] = city['location']
+            pass
+        
+        allCities.append(cityData)
+        # cityCollection.insert_one(cityData)
+        print("City: "+cityData['city'])
         pass
-    else:
-        cityData['city'] = city['location']
-        pass
-    
-    cityCollection.insert_one(cityData)
-    print("City: "+cityData['city'])
     pass
-
 print("##### Data from "+cs+"trackcorona.live/api/cities"+ce+" is pushed to collection")
 
 
 # Get all cities from covid19India
 with urlopen("https://api.covid19india.org/v2/state_district_wise.json") as cityurl:
     print("##### Got collection of all Cities")
-    allCities = json.loads(cityurl.read().decode())
+    citiesData = json.loads(cityurl.read().decode())
     
 with urlopen("https://api.covid19india.org/zones.json") as zoneurl:
     print("##### Got collection of all Zones")
@@ -62,10 +64,10 @@ with urlopen("https://api.covid19india.org/resources/resources.json") as resourc
     allResources = json.loads(resourceURL.read().decode())
     allResources = allResources['resources']
     
-for stateList in allCities:
+for stateList in citiesData:
     for city in stateList['districtData']:
         if city['district'] != 'Other State' or city['district'] != 'Unknown':
-            resourceArr = []
+            resourceObj = {}
             cityData = {
                 'city': city['district'],
                 'notes': city['notes'],
@@ -81,11 +83,12 @@ for stateList in allCities:
             # add resources to cities
             for resource in allResources:
                 if resource['city'] == city['district']:
-                    resourceArr.append(resource)
+                    resourceObj.setdefault(resource['category'].replace('.',''), []).append(resource)
+                    # resourceObj.append(resource)
                 pass
             pass
-            if resourceArr:
-                cityData['resources'] = resourceArr
+            if resourceObj:
+                cityData['resources'] = resourceObj
                 pass
             # check in zones for city data
             for zone in allZones:
@@ -93,22 +96,27 @@ for stateList in allCities:
                     cityData['zone'] = zone['zone']
                     pass
                 pass
-            cityCollection.insert_one(cityData)
+            allCities.append(cityData)
+            # cityCollection.insert_one(cityData)
             print("City: %s"%cityData['city'])
             pass
         pass
     pass
 
-# Migrate to main collection
-clearMainCol = mainCollection.delete_many({})
-print("##### Cleared all "+ cs + str(clearMainCol.deleted_count) + ce+" documents from "+ cs + str(mainCollection.name) + ce)
+# Delete all documents from city test collection
+delete = cityCollection.delete_many({})
+print("##### Cleared all "+ cs + str(delete.deleted_count) + ce +" Documents deleted from "+ cs + str(cityCollection.name + ce))
 
-# Get all document from collection to copy from
-dataToMigrate = cityCollection.find({})
-print("##### "+ cs + str(cityCollection.count_documents({})) + ce +" Documents will migrate from "+cs + str(cityCollection.name) + ce +" to "+ cs + str(mainCollection.name) + ce)
+# Insert allCities data to city test collection
+cityCollection.insert_many(allCities)
+print("##### Moved all "+ cs + str(len(allCities)) + ce +" documents to "+ cs + str(cityCollection.name) + ce)
 
-#Copying all document to collection
-dataMove = mainCollection.insert_many(dataToMigrate)
-print("##### Migrated "+ cs + str(cityCollection.count_documents({})) + ce +" document from "+ cs + str(cityCollection.name) + ce +" to "+ cs + str(mainCollection.name) + ce)
+# Delete all documents from city main collection
+delete = mainCollection.delete_many({})
+print("##### Cleared all "+ cs + str(delete.deleted_count) + ce+" documents from "+ cs + str(mainCollection.name) + ce)
+
+# Insert allCities data to city main collection
+mainCollection.insert_many(allCities)
+print("##### Moved all "+ cs + str(len(allCities)) + ce +" documents to "+ cs + str(mainCollection.name) + ce)
 
 print("##### "+cs+"Done bro"+ce+", check new collection")

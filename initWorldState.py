@@ -20,24 +20,23 @@ db = client['covid-live']
 stateCollection = db['state-test']
 mainCollection = db['state-main']
 
-delete = stateCollection.delete_many({})
-print("##### "+ cs + str(delete.deleted_count) + ce +" Documents deleted from "+ cs + str(stateCollection.name + ce))
+# Collecting all state objects
+allStates = []
 
+# Keep track of all states added from trackcorona.live
+worldStateAdded = []
 
+print("##### Fetching data from "+cs+"trackcorona.live/api/provinces"+ce+"...")
 req = Request('https://www.trackcorona.live/api/provinces', headers={'User-Agent': 'Mozilla/5.0','Content-Type': 'application/json'})
-allStates = json.loads(urlopen(req).read())
-allStates = allStates['data']
-if allStates:
+statesData = json.loads(urlopen(req).read())
+statesData = statesData['data']
+if statesData:
     print("##### Got data from "+cs+"trackcorona.live/api/provinces"+ce+" as collection")
     pass
 
-worldStateAdded = []
-
-# print(data[0]['level'])
-
 # today = date.today()
 
-for state in allStates:
+for state in statesData:
     if state['country_code'] != 'in':
         stateData = {
             'state': state['location'],
@@ -50,13 +49,10 @@ for state in allStates:
             'updated': state['updated'][:19]
         }
         
-        # if 'updated' in state:
-        #     stateData['updated'] = state['updated'][:19]
-        #     dataDate = datetime.strptime(stateData['updated'], '%Y-%m-%d %H:%M:%S').date()
-        #     notUpdatedStates.append(stateData['state'])
-        #     pass
+        
         worldStateAdded.append(stateData['state'])
-        stateCollection.insert_one(stateData)
+        # stateCollection.insert_one(stateData)
+        allStates.append(stateData)
         print("State: "+stateData['state'])
         pass
     pass
@@ -77,15 +73,18 @@ with urlopen("https://api.covid19india.org/resources/resources.json") as resourc
     
 
 for state in indiaState:
-    resourceArr = []
+    resourceObj = {}
     for resource in allResources:
         if resource['state'] == state['state']:
-            resourceArr.append(resource)
+            resourceObj.setdefault(resource['category'].replace('.',''), []).append(resource)
             pass
         pass
     stateData = state
-    stateData['resources'] = resourceArr
-    stateCollection.insert_one(stateData)
+    if resourceObj:
+        stateData['resources'] = resourceObj
+        pass
+    allStates.append(stateData)
+    # stateCollection.insert_one(stateData)
     print("State: "+stateData['state'])
     pass
 
@@ -144,7 +143,8 @@ for item in data:
             if 'recovered' in item:
                 stateData['recovered'] = item['recovered']
                 pass
-            stateCollection.insert_one(stateData)
+            allStates.append(stateData)
+            # stateCollection.insert_one(stateData)
             print("State: "+stateData['state'])
             pass
         pass
@@ -183,20 +183,26 @@ for item in data:
         if 'recovered' in item:
             countyData['recovered'] = item['recovered']
             pass
-        stateCollection.insert_one(countyData)
+        allStates.append(countyData)
+        # stateCollection.insert_one(countyData)
         print("County: "+countyData['county'])
         pass
     pass
 
-# Migrate to main collection
-clearMainCol = mainCollection.delete_many({})
-print("##### Cleared all "+ cs + str(clearMainCol.deleted_count) + ce+" documents from "+ cs + str(mainCollection.name) + ce)
+# Delete all documents from state test collection
+delete = stateCollection.delete_many({})
+print("##### Cleared all "+ cs + str(delete.deleted_count) + ce +" documents from "+ cs + str(stateCollection.name + ce))
 
-# Get all document from collection to copy from
-dataToMigrate = stateCollection.find({})
-print("##### "+ cs + str(stateCollection.count_documents({})) + ce +" Documents will migrate from "+cs + str(stateCollection.name) + ce +" to "+ cs + str(mainCollection.name) + ce)
+# Moving all documents to state test collection
+stateCollection.insert_many(allStates)
+print("##### Moved all "+ cs + str(len(allStates)) + ce +" documents to "+ cs + str(stateCollection.name) + ce)
 
-#Copying all document to collection
-dataMove = mainCollection.insert_many(dataToMigrate)
-print("##### Migrated "+ cs + str(stateCollection.count_documents({})) + ce +" document from "+ cs + str(stateCollection.name) + ce +" to "+ cs + str(mainCollection.name) + ce)
+# Delete all documents from state main collection
+delete = mainCollection.delete_many({})
+print("##### Cleared all "+ cs + str(delete.deleted_count) + ce+" documents from "+ cs + str(mainCollection.name) + ce)
+
+# Moving all documents to state main collection
+mainCollection.insert_many(allStates)
+print("##### Moved all "+ cs + str(len(allStates)) + ce +" documents to "+ cs + str(mainCollection.name) + ce)
+
 print("##### "+cs+"Done bro"+ce+", check new collection")
