@@ -48,7 +48,6 @@ for city in citiesData:
     pass
 print("##### Data from "+cs+"trackcorona.live/api/cities"+ce+" is pushed to collection")
 
-
 # Get all cities from covid19India
 with urlopen("https://api.covid19india.org/v2/state_district_wise.json") as cityurl:
     print("##### Got collection of all Cities")

@@ -88,7 +88,7 @@ for state in indiaState:
     print("State: "+stateData['state'])
     pass
 
-print("##### All "+cs+"Indian"+ce+" states are pushed to collection")
+print("##### All "+cs+"Indian"+ce+" states are added to collection")
 
 
 # For remaining state which are not in above API
