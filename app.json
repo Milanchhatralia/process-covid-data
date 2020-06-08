@@ -1,0 +1,10 @@
+{
+    "name": "Process-Covid-Data",
+    "description": "This app collects covid-live-data from different apis and store it to city and state collection in mongodb database",
+    "keywords": [
+        "COVID-19",
+        "python",
+        "api"
+    ],
+    "repository": "https://github.com/jaimin275/process-covid-data"
+}
