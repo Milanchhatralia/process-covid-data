@@ -53,7 +53,7 @@ for state in statesData:
         worldStateAdded.append(stateData['state'])
         # stateCollection.insert_one(stateData)
         allStates.append(stateData)
-        print("State: "+stateData['state'])
+        # print("State: "+stateData['state'])
         pass
     pass
 
@@ -85,7 +85,7 @@ for state in indiaState:
         pass
     allStates.append(stateData)
     # stateCollection.insert_one(stateData)
-    print("State: "+stateData['state'])
+    # print("State: "+stateData['state'])
     pass
 
 print("##### All "+cs+"Indian"+ce+" states are added to collection")
@@ -145,7 +145,7 @@ for item in data:
                 pass
             allStates.append(stateData)
             # stateCollection.insert_one(stateData)
-            print("State: "+stateData['state'])
+            # print("State: "+stateData['state'])
             pass
         pass
     
@@ -185,7 +185,7 @@ for item in data:
             pass
         allStates.append(countyData)
         # stateCollection.insert_one(countyData)
-        print("County: "+countyData['county'])
+        # print("County: "+countyData['county'])
         pass
     pass
 

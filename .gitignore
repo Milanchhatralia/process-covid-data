@@ -1,0 +1,5 @@
+# ide folder
+.vscode
+
+# unused files
+collectionOperations.py
