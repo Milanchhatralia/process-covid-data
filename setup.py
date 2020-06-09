@@ -28,10 +28,10 @@ schedule.every(25).minutes.do(main)
 # schedule.every(10).seconds.do(main)
 
 def start_scheduling():
+    print("sheduling started..")
     # Loop so that the scheduling task 
     # keeps on running all time. 
-    while True: 
-        print("sheduling working..")
+    while True:
         # Checks whether a scheduled task  
         # is pending to run or not 
         schedule.run_pending() 
