@@ -4,7 +4,7 @@ import os
 import schedule 
 import threading
 import time
-
+import webbrowser
 
 count = 1
 
@@ -21,6 +21,7 @@ def main():
     exec(open('initWorldState.py').read())
     print("...Succesfully ran initWorldState.py file...\n\n")
     count = count + 1
+    webbrowser.open('https://covid-live.azurewebsites.net')
 
 # Task scheduling 
 # After every 30mins main() is called.  
