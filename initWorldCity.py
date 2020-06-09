@@ -43,7 +43,7 @@ for city in citiesData:
         
         allCities.append(cityData)
         # cityCollection.insert_one(cityData)
-        print("City: "+cityData['city'])
+        # print("City: "+cityData['city'])
         pass
     pass
 print("##### Data from "+cs+"trackcorona.live/api/cities"+ce+" is pushed to collection")
@@ -97,7 +97,7 @@ for stateList in citiesData:
                 pass
             allCities.append(cityData)
             # cityCollection.insert_one(cityData)
-            print("City: %s"%cityData['city'])
+            # print("City: %s"%cityData['city'])
             pass
         pass
     pass
