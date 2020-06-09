@@ -1,6 +1,5 @@
 import json
 import pymongo
-import re
 # import urllib.request as covidURL
 
 from urllib.request import Request, urlopen
