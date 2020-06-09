@@ -1,6 +1,10 @@
 # Schedule Library imported 
+from flask import Flask
+import os
 import schedule 
+import threading
 import time
+
 
 count = 1
 
@@ -20,18 +24,25 @@ def main():
 
 # Task scheduling 
 # After every 30mins main() is called.  
-schedule.every(30).minutes.do(main)
+schedule.every(25).minutes.do(main)
 # schedule.every(10).seconds.do(main)
 
-
-
-if __name__ == '__main__':
-    # main()
+def start_scheduling():
     # Loop so that the scheduling task 
     # keeps on running all time. 
     while True: 
-    
+        print("sheduling working..")
         # Checks whether a scheduled task  
         # is pending to run or not 
         schedule.run_pending() 
-        time.sleep(1) 
+        time.sleep(1)
+
+app = Flask(__name__)
+
+x = threading.Thread(target=start_scheduling)
+
+if __name__ == '__main__':
+    # main()
+    x.start()
+    PORT = os.environ.get("PORT", 5000)
+    app.run(host='0.0.0.0', port= PORT, load_dotenv=True)
