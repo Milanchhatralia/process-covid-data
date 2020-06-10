@@ -4,9 +4,10 @@ import os
 import schedule 
 import threading
 import time
-import webbrowser
+import requests
 
 count = 1
+URL = "https://covid-live.azurewebsites.net"
 
 def main():
     global count
@@ -21,7 +22,13 @@ def main():
     exec(open('initWorldState.py').read())
     print("...Succesfully ran initWorldState.py file...\n\n")
     count = count + 1
-    webbrowser.open('https://covid-live.azurewebsites.net')
+    
+    try:
+        r = requests.get(url = URL) 
+        print("Successfully send heartbeat to url: ", URL)
+    except Exception as e:
+        print("error sending heartbeat to url: ", URL, " \n Error: ", e)
+
 
 # Task scheduling 
 # After every 30mins main() is called.  
@@ -41,6 +48,10 @@ def start_scheduling():
 app = Flask(__name__)
 
 x = threading.Thread(target=start_scheduling)
+
+@app.route('/')
+def heartbeat():
+    return 'Hello'
 
 if __name__ == '__main__':
     # main()
