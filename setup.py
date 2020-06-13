@@ -23,11 +23,12 @@ def main():
     print("...Succesfully ran initWorldState.py file...\n\n")
     count = count + 1
     
-    try:
-        r = requests.get(url = URL) 
-        print("Successfully send heartbeat to url: ", URL)
-    except Exception as e:
-        print("error sending heartbeat to url: ", URL, " \n Error: ", e)
+    # now heartbeat to covid-live api is sent using cron-job on every 15 minute
+    # try:
+    #     r = requests.get(url = URL) 
+    #     print("Successfully send heartbeat to url: ", URL)
+    # except Exception as e:
+    #     print("error sending heartbeat to url: ", URL, " \n Error: ", e)
 
 
 # Task scheduling 
