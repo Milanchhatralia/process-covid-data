@@ -7,7 +7,7 @@ import time
 import requests
 
 count = 1
-# URL = "https://covid-live.azurewebsites.net"
+URL = "https://covid-live.azurewebsites.net/ping"
 
 def main():
     global count
@@ -24,11 +24,11 @@ def main():
     count = count + 1
     
     # now heartbeat to covid-live api is sent using cron-job on every 15 minute
-    # try:
-    #     r = requests.get(url = URL) 
-    #     print("Successfully send heartbeat to url: ", URL)
-    # except Exception as e:
-    #     print("error sending heartbeat to url: ", URL, " \n Error: ", e)
+    try:
+        r = requests.get(url = URL) 
+        print("Successfully send heartbeat to url: ", URL)
+    except Exception as e:
+        print("error sending heartbeat to url: ", URL, " \n Error: ", e)
 
 
 # Task scheduling 
