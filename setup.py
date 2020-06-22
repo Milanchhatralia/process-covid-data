@@ -34,7 +34,7 @@ def main():
 # Task scheduling 
 # After every 30mins main() is called.  
 schedule.every(25).minutes.do(main)
-# schedule.every(10).seconds.do(main)
+# schedule.every(11).seconds.do(main)
 
 def start_scheduling():
     print("sheduling started..")
