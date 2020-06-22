@@ -5,23 +5,27 @@ import schedule
 import threading
 import time
 import requests
+import json
 
 count = 1
 URL = "https://covid-live.azurewebsites.net/ping"
 
 def main():
-    global count
-    print("running process covid data ",count," time")
-    # run initWorldCity.py file
-    print("...Running initWorldCity.py file...")
-    exec(open('initWorldCity.py').read())
-    print("...Succesfully ran initWorldCity.py file...\n")
+    try:
+        global count
+        print("running process covid data ",count," time")
+        # run initWorldCity.py file
+        print("...Running initWorldCity.py file...")
+        exec(open('initWorldCity.py').read())
+        print("...Succesfully ran initWorldCity.py file...\n")
 
-    # run initWorldState.py file
-    print("...Running initWorldState.py file...")
-    exec(open('initWorldState.py').read())
-    print("...Succesfully ran initWorldState.py file...\n\n")
-    count = count + 1
+        # run initWorldState.py file
+        print("...Running initWorldState.py file...")
+        exec(open('initWorldState.py').read())
+        print("...Succesfully ran initWorldState.py file...\n\n")
+        count = count + 1
+    except Exception as e:
+        print("got excetion: "+ json.dumps(e))
     
     # now heartbeat to covid-live api is sent using cron-job on every 15 minute
     try:
@@ -33,8 +37,8 @@ def main():
 
 # Task scheduling 
 # After every 30mins main() is called.  
-schedule.every(25).minutes.do(main)
-# schedule.every(10).seconds.do(main)
+schedule.every(15).minutes.do(main)
+# schedule.every(11).seconds.do(main)
 
 def start_scheduling():
     print("sheduling started..")
