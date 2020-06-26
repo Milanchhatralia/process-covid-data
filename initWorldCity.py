@@ -33,6 +33,16 @@ for city in citiesData:
             'updated': city['updated'][:19]
         }
         
+        if 'velocity_confirmed' in city:
+            cityData['deltaconfirmed'] = city['velocity_confirmed']
+            pass
+        if 'velocity_dead' in city:
+            cityData['deltadeaths'] = city['velocity_dead']
+            pass
+        if 'velocity_recovered' in city:
+            cityData['deltarecovered'] = city['velocity_recovered']
+            pass
+        
         if ',' in city['location']:
             cityData['city'] = city['location'].partition(',')[0].strip()
             cityData['state'] = city['location'].partition(',')[2].strip()
@@ -74,7 +84,9 @@ for stateList in citiesData:
                 'confirmed': city['confirmed'],
                 'deaths': city['deceased'],
                 'recovered': city['recovered'],
-                'delta': city['delta'],
+                'deltaconfirmed': city['delta']['confirmed'],
+                'deltadeaths': city['delta']['deceased'],
+                'deltarecovered': city['delta']['recovered'],
                 'statecode': stateList['statecode'],
                 'state': stateList['state']
             }
