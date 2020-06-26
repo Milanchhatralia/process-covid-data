@@ -65,26 +65,9 @@ with urlopen("https://api.covid19india.org/data.json") as indiaStates:
     print("##### Got collection of all states in "+cs+"India"+ce)
     indiaState = json.loads(indiaStates.read().decode())
     indiaState = indiaState['statewise']
-    
-with urlopen("https://api.covid19india.org/resources/resources.json") as resourceURL:
-    print("##### Got all resources for "+cs+"India"+ce)
-    allResources = json.loads(resourceURL.read().decode())
-    allResources = allResources['resources']
-    
 
 for state in indiaState:
-    resourceObj = {}
-    for resource in allResources:
-        if resource['state'] == state['state']:
-            resourceObj.setdefault(resource['category'].replace('.',''), []).append(resource)
-            pass
-        pass
-    stateData = state
-    if resourceObj:
-        stateData['resources'] = resourceObj
-        pass
-    allStates.append(stateData)
-    # stateCollection.insert_one(stateData)
+    allStates.append(state)
     # print("State: "+stateData['state'])
     pass
 
