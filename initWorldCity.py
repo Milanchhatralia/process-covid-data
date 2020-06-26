@@ -63,10 +63,10 @@ with urlopen("https://api.covid19india.org/v2/state_district_wise.json") as city
     print("##### Got collection of all Cities")
     citiesData = json.loads(cityurl.read().decode())
     
-with urlopen("https://api.covid19india.org/zones.json") as zoneurl:
-    print("##### Got collection of all Zones")
-    allZones = json.loads(zoneurl.read().decode())
-    allZones = allZones['zones']
+# with urlopen("https://api.covid19india.org/zones.json") as zoneurl:
+#     print("##### Got collection of all Zones")
+#     allZones = json.loads(zoneurl.read().decode())
+#     allZones = allZones['zones']
     
 with urlopen("https://api.covid19india.org/resources/resources.json") as resourceURL:
     print("##### Got all resources for "+cs+"India"+ce)
@@ -101,12 +101,14 @@ for stateList in citiesData:
             if resourceObj:
                 cityData['resources'] = resourceObj
                 pass
+            
             # check in zones for city data
-            for zone in allZones:
-                if zone['district'] == city['district']:
-                    cityData['zone'] = zone['zone']
-                    pass
-                pass
+            # for zone in allZones:
+            #     if zone['district'] == city['district']:
+            #         cityData['zone'] = zone['zone']
+            #         pass
+            #     pass
+            
             allCities.append(cityData)
             # cityCollection.insert_one(cityData)
             # print("City: %s"%cityData['city'])
