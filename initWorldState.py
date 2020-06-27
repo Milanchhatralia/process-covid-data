@@ -132,44 +132,44 @@ for item in data:
             pass
         pass
     
-    elif item['level'] == 'county':
-        if '-' in item['countyId']:
-            countyID = str(item['countyId'][item['countyId'].index('-')+1:].strip()),
-            pass
-        elif ':' in item['countyId']:
-            countyID = str(item['countyId'][item['countyId'].index(':')+1:].strip()),
-            pass
-        countyData = {
-            'county': item['county'],
-            'country': item['country'],
-            'countycode': countyID,
-            'statecode': item['stateId'][8:].strip(),
-            'countrycode': item['stateId'][5:7],
-            'latitude': item['coordinates'][0],
-            'longitude': item['coordinates'][1]
-        }
-        if 'deaths' in item:
-            countyData['deaths'] = item['deaths']
-            pass
-        if 'cases' in item:
-            countyData['confirmed'] = item['cases']
-            pass
-        if 'hospitalized' in item:
-            countyData['active'] = item['hospitalized']
-            pass
-        if 'active' in item:
-            countyData['active'] = item['active']
-            pass
-        if 'discharged' in item:
-            countyData['recovered'] = item['discharged']
-            pass
-        if 'recovered' in item:
-            countyData['recovered'] = item['recovered']
-            pass
-        allStates.append(countyData)
-        # stateCollection.insert_one(countyData)
-        # print("County: "+countyData['county'])
-        pass
+    # elif item['level'] == 'county':
+    #     if '-' in item['countyId']:
+    #         countyID = str(item['countyId'][item['countyId'].index('-')+1:].strip()),
+    #         pass
+    #     elif ':' in item['countyId']:
+    #         countyID = str(item['countyId'][item['countyId'].index(':')+1:].strip()),
+    #         pass
+    #     countyData = {
+    #         'county': item['county'],
+    #         'country': item['country'],
+    #         'countycode': countyID,
+    #         'statecode': item['stateId'][8:].strip(),
+    #         'countrycode': item['stateId'][5:7],
+    #         'latitude': item['coordinates'][0],
+    #         'longitude': item['coordinates'][1]
+    #     }
+    #     if 'deaths' in item:
+    #         countyData['deaths'] = item['deaths']
+    #         pass
+    #     if 'cases' in item:
+    #         countyData['confirmed'] = item['cases']
+    #         pass
+    #     if 'hospitalized' in item:
+    #         countyData['active'] = item['hospitalized']
+    #         pass
+    #     if 'active' in item:
+    #         countyData['active'] = item['active']
+    #         pass
+    #     if 'discharged' in item:
+    #         countyData['recovered'] = item['discharged']
+    #         pass
+    #     if 'recovered' in item:
+    #         countyData['recovered'] = item['recovered']
+    #         pass
+    #     allStates.append(countyData)
+    #     # stateCollection.insert_one(countyData)
+    #     # print("County: "+countyData['county'])
+    #     pass
     pass
 
 # Delete all documents from state test collection
