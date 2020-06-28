@@ -3,6 +3,8 @@ import pymongo
 import re
 # import urllib.request as covidURL
 
+from collections import defaultdict
+
 from urllib.request import Request, urlopen
 
 # Import Date time
@@ -65,10 +67,41 @@ with urlopen("https://api.covid19india.org/data.json") as indiaStates:
     print("##### Got collection of all states in "+cs+"India"+ce)
     indiaState = json.loads(indiaStates.read().decode())
     indiaState = indiaState['statewise']
+    
+# Get all state test data from covid19India
+with urlopen("https://api.covid19india.org/state_test_data.json") as stateTestURI:
+    print("##### Got test collection of all states")
+    stateTest = json.loads(stateTestURI.read().decode())
+    
+# Separating hole data into state array
+d = defaultdict(list)
+for stateItem in stateTest['states_tested_data']:
+    if stateItem['state'] not in 'Total':
+        d[stateItem['state']].append(stateItem)
+        # print(stateItem)
+        pass
 
 for state in indiaState:
-    allStates.append(state)
-    # print("State: "+stateData['state'])
+    if state['state'] not in 'Total' and state['state'] not in 'State Unassigned':
+        stateData = state
+        if len(d[state['state']]) > 0:
+            stateTestData = d[state['state']][-1]
+            if 'testspermillion' in stateTestData:
+                stateData['testspermillion'] = stateTestData['testspermillion']
+                pass
+            if 'testsperthousand' in stateTestData:
+                stateData['testsperthousand'] = stateTestData['testsperthousand']
+                pass
+            if 'totalpeoplecurrentlyinquarantine' in stateTestData:
+                stateData['totalquarantined'] = stateTestData['totalpeoplecurrentlyinquarantine']
+                pass
+            if 'totaltested' in stateTestData:
+                stateData['totaltested'] = stateTestData['totaltested']
+                pass
+            pass
+        allStates.append(stateData)
+        # print("State: "+stateData['state'])
+        pass
     pass
 
 print("##### All "+cs+"Indian"+ce+" states are added to collection")
