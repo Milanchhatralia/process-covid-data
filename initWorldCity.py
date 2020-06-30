@@ -73,6 +73,10 @@ with urlopen("https://api.covid19india.org/resources/resources.json") as resourc
     allResources = json.loads(resourceURL.read().decode())
     allResources = allResources['resources']
     
+with urlopen("https://api.covid19india.org/v3/data.json") as stateCityTestURI:
+    print("##### Got all test meta for "+cs+"India"+ce)
+    statCityTest = json.loads(stateCityTestURI.read().decode())
+
 for stateList in citiesData:
     for city in stateList['districtData']:
         if city['district'] != 'Other State' or city['district'] != 'Unknown':
@@ -88,8 +92,12 @@ for stateList in citiesData:
                 'deltadeaths': city['delta']['deceased'],
                 'deltarecovered': city['delta']['recovered'],
                 'statecode': stateList['statecode'],
-                'state': stateList['state']
+                'state': stateList['state'],
             }
+            # print(stateList['statecode']+" - "+city['district'])
+            if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:
+                cityData['tested'] = statCityTest[stateList['statecode']]['districts'][city['district']]['total']['tested']
+                pass
             
             # add resources to cities
             for resource in allResources:
