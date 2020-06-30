@@ -1,9 +1,8 @@
 import json
 import pymongo
 import re
+import math
 # import urllib.request as covidURL
-
-from collections import defaultdict
 
 from urllib.request import Request, urlopen
 
@@ -60,49 +59,50 @@ for state in statesData:
     pass
 
 print("##### Data from "+cs+"trackcorona.live/api/provinces"+ce+" is pushed to collection")
+  
 
+# Get all v3 data from covid19India
+with urlopen("https://api.covid19india.org/v3/data.json") as c19Iv3DataURI:
+    print("##### Got all test meta for "+cs+"India"+ce)
+    c19Iv3Data = json.loads(c19Iv3DataURI.read().decode())
 
-# For indian states
-with urlopen("https://api.covid19india.org/data.json") as indiaStates:
-    print("##### Got collection of all states in "+cs+"India"+ce)
-    indiaState = json.loads(indiaStates.read().decode())
-    indiaState = indiaState['statewise']
-    
-# Get all state test data from covid19India
-with urlopen("https://api.covid19india.org/state_test_data.json") as stateTestURI:
-    print("##### Got test collection of all states")
-    stateTest = json.loads(stateTestURI.read().decode())
-    
-# Separating hole data into state array
-d = defaultdict(list)
-for stateItem in stateTest['states_tested_data']:
-    if stateItem['state'] not in 'Total':
-        d[stateItem['state']].append(stateItem)
-        # print(stateItem)
+# Get stateCode to state mapping JSON file
+with open('./mapping/stateCode-state.json','r') as stateMappingJSON:
+    stateMapping = json.load(stateMappingJSON)
+
+for v3StateCode, v3StateData in c19Iv3Data.items():
+    stateData = {
+        'statecode': v3StateCode,
+        'state': stateMapping[v3StateCode],
+    }
+    # Population
+    if 'meta' in v3StateData and 'population' in v3StateData['meta']:
+        stateData['population'] = v3StateData['meta']['population']
         pass
-
-for state in indiaState:
-    if state['state'] not in 'Total' and state['state'] not in 'State Unassigned':
-        stateData = state
-        if len(d[state['state']]) > 0:
-            stateTestData = d[state['state']][-1]
-            if 'testspermillion' in stateTestData:
-                stateData['testspermillion'] = stateTestData['testspermillion']
-                pass
-            if 'testsperthousand' in stateTestData:
-                stateData['testsperthousand'] = stateTestData['testsperthousand']
-                pass
-            if 'totalpeoplecurrentlyinquarantine' in stateTestData:
-                stateData['totalquarantined'] = stateTestData['totalpeoplecurrentlyinquarantine']
-                pass
-            if 'totaltested' in stateTestData:
-                stateData['totaltested'] = stateTestData['totaltested']
-                pass
+    
+    # Current data
+    if 'total' in v3StateData:
+        for key,value in v3StateData['total'].items():
+            stateData[key] = value
             pass
-        allStates.append(stateData)
-        # print("State: "+stateData['state'])
         pass
+    
+    # Delta data
+    if 'delta' in v3StateData:
+        for key,value in v3StateData['delta'].items():
+            stateData['delta'+key] = value
+            pass
+        pass
+    
+    # Manual reconciliation
+    if 'tested' in stateData and 'population' in stateData:
+        stateData['testpermillion'] = '≈' + str( math.trunc( ( stateData['tested'] / stateData['population'] ) * 1000000 ) )
+        stateData['testperthousand'] =  math.trunc( ( stateData['tested'] / stateData['population'] ) * 1000 )
+        pass
+    
+    allStates.append(stateData)
     pass
+
 
 print("##### All "+cs+"Indian"+ce+" states are added to collection")
 
