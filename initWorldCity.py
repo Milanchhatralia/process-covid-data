@@ -95,7 +95,7 @@ for stateList in citiesData:
                 'state': stateList['state'],
             }
             # print(stateList['statecode']+" - "+city['district'])
-            if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:
+            if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'total' in statCityTest[stateList['statecode']]['districts'][city['district']] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:
                 cityData['tested'] = statCityTest[stateList['statecode']]['districts'][city['district']]['total']['tested']
                 pass
             
