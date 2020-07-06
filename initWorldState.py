@@ -96,7 +96,7 @@ for v3StateCode, v3StateData in c19Iv3Data.items():
     
     # Manual reconciliation
     if 'tested' in stateData and 'population' in stateData:
-        stateData['testpermillion'] = '≈' + str( math.trunc( ( stateData['tested'] / stateData['population'] ) * 1000000 ) )
+        stateData['testpermillion'] = math.trunc( ( stateData['tested'] / stateData['population'] ) * 1000000 )
         stateData['testperthousand'] =  math.trunc( ( stateData['tested'] / stateData['population'] ) * 1000 )
         pass
     
