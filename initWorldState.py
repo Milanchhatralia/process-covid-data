@@ -63,8 +63,14 @@ print("##### Data from "+cs+"trackcorona.live/api/provinces"+ce+" is pushed to c
 
 # Get all v3 data from covid19India
 with urlopen("https://api.covid19india.org/v3/data.json") as c19Iv3DataURI:
-    print("##### Got all test meta for "+cs+"India"+ce)
+    print("##### Got all state meta for "+cs+"India"+ce)
     c19Iv3Data = json.loads(c19Iv3DataURI.read().decode())
+    
+# Get all active case for respective state
+with urlopen("https://api.covid19india.org/data.json") as c19IDataURI:
+    print("##### Got all active cases of resp. state of "+cs+"India"+ce)
+    c19IData = json.loads(c19IDataURI.read().decode())
+    c19IData = c19IData["statewise"]
 
 # Get stateCode to state mapping JSON file
 with open('./mapping/stateCode-state.json','r') as stateMappingJSON:
@@ -75,6 +81,12 @@ for v3StateCode, v3StateData in c19Iv3Data.items():
         'statecode': v3StateCode,
         'state': stateMapping[v3StateCode],
     }
+    # Active Cases
+    c19IDataState = list(filter(lambda state: state['statecode'] == v3StateCode, c19IData))
+    if c19IDataState:
+        stateData['active'] = c19IDataState[0]['active']
+        pass
+    
     # Population
     if 'meta' in v3StateData and 'population' in v3StateData['meta']:
         stateData['population'] = v3StateData['meta']['population']
