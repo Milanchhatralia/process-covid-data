@@ -47,7 +47,8 @@ for state in statesData:
             'confirmed': state['confirmed'],
             'recovered': state['recovered'],
             'deaths': state['dead'],
-            'updated': state['updated'][:19]
+            'updated': state['updated'][:19],
+            'type': 'state'
         }
         
         
@@ -80,11 +81,12 @@ for v3StateCode, v3StateData in c19Iv3Data.items():
     stateData = {
         'statecode': v3StateCode,
         'state': stateMapping[v3StateCode],
+        'type': 'state',
     }
     # Active Cases
     c19IDataState = list(filter(lambda state: state['statecode'] == v3StateCode, c19IData))
     if c19IDataState:
-        stateData['active'] = c19IDataState[0]['active']
+        stateData['active'] = int(c19IDataState[0]['active'])
         pass
     
     # Population
@@ -151,7 +153,8 @@ for item in data:
                 'statecode': item['stateId'][8:].strip(),
                 'countrycode': item['stateId'][5:7],
                 'latitude': item['coordinates'][0],
-                'longitude': item['coordinates'][1]
+                'longitude': item['coordinates'][1],
+                'type': 'state',
             }
             if 'deaths' in item:
                 stateData['deaths'] = item['deaths']

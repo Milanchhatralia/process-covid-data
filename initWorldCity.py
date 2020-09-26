@@ -30,7 +30,8 @@ for city in citiesData:
             'confirmed': city['confirmed'],
             'deaths': city['dead'],
             'recovered': city['recovered'],
-            'updated': city['updated'][:19]
+            'updated': city['updated'][:19],
+            'type': 'city',
         }
         
         if 'velocity_confirmed' in city:
@@ -93,6 +94,7 @@ for stateList in citiesData:
                 'deltarecovered': city['delta']['recovered'],
                 'statecode': stateList['statecode'],
                 'state': stateList['state'],
+                'type': 'city',
             }
             # print(stateList['statecode']+" - "+city['district'])
             if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'total' in statCityTest[stateList['statecode']]['districts'][city['district']] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:
