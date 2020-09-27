@@ -14,6 +14,10 @@ mainCollection = db['city-main']
 # Collecting all city data
 allCities = []
 
+# Get countryCode to country mapping JSON file
+with open('./mapping/countryCode-country.json','r') as countryMappingJSON:
+    countryMapping = json.load(countryMappingJSON)
+
 # Get all cities
 print("##### Fetching data from "+cs+"trackcorona.live/api/cities"+ce+"...")
 req = Request('https://www.trackcorona.live/api/cities', headers={'User-Agent': 'Mozilla/5.0','Content-Type': 'application/json'})
@@ -26,7 +30,8 @@ if citiesData:
 for city in citiesData:
     if city['country_code'] not in 'in':
         cityData = {
-            'countrycode': city['country_code'],
+            'countrycode': city['country_code'].upper(),
+            'country': countryMapping[city['country_code'].upper()],
             'confirmed': city['confirmed'],
             'deaths': city['dead'],
             'recovered': city['recovered'],
@@ -95,6 +100,8 @@ for stateList in citiesData:
                 'statecode': stateList['statecode'],
                 'state': stateList['state'],
                 'type': 'city',
+                'countrycode': 'IN',
+                'country': 'India',
             }
             # print(stateList['statecode']+" - "+city['district'])
             if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'total' in statCityTest[stateList['statecode']]['districts'][city['district']] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:

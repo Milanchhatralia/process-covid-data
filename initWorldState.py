@@ -37,11 +37,16 @@ if statesData:
 
 # today = date.today()
 
+# Get countryCode to country mapping JSON file
+with open('./mapping/countryCode-country.json','r') as countryMappingJSON:
+    countryMapping = json.load(countryMappingJSON)
+
 for state in statesData:
     if state['country_code'] != 'in':
         stateData = {
             'state': state['location'],
-            'countrycode': state['country_code'],
+            'countrycode': state['country_code'].upper(),
+            'country': countryMapping[state['country_code'].upper()],
             'latitude': state['latitude'],
             'longitude': state['longitude'],
             'confirmed': state['confirmed'],
@@ -82,6 +87,8 @@ for v3StateCode, v3StateData in c19Iv3Data.items():
         'statecode': v3StateCode,
         'state': stateMapping[v3StateCode],
         'type': 'state',
+        'countrycode': 'IN',
+        'country': 'India',
     }
     # Active Cases
     c19IDataState = list(filter(lambda state: state['statecode'] == v3StateCode, c19IData))
@@ -151,7 +158,8 @@ for item in data:
                 'state': item['state'],
                 'country': item['country'],
                 'statecode': item['stateId'][8:].strip(),
-                'countrycode': item['stateId'][5:7],
+                'countrycode': item['stateId'][5:7].upper(),
+                'country': countryMapping[item['stateId'][5:7].upper()],
                 'latitude': item['coordinates'][0],
                 'longitude': item['coordinates'][1],
                 'type': 'state',
