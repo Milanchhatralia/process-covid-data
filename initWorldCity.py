@@ -103,6 +103,16 @@ for stateList in citiesData:
                 'countrycode': 'IN',
                 'country': 'India',
             }
+            # City Delta Data
+            if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'delta' in statCityTest[stateList['statecode']]['districts'][city['district']]:
+                delta = statCityTest[stateList['statecode']]['districts'][city['district']]['delta']
+                if 'confirmed' in delta:
+                    cityData['deltaconfirmed'] = delta['confirmed']
+                if 'recovered' in delta:
+                    cityData['deltarecovered'] = delta['recovered']
+                if 'deceased' in delta:
+                    cityData['deltadeaths'] = delta['deceased']
+            
             # print(stateList['statecode']+" - "+city['district'])
             if str(city['district']) not in 'Unassigned' and 'districts' in statCityTest[stateList['statecode']] and str(city['district']) in statCityTest[stateList['statecode']]['districts'] and 'total' in statCityTest[stateList['statecode']]['districts'][city['district']] and 'tested' in statCityTest[stateList['statecode']]['districts'][city['district']]['total']:
                 cityData['tested'] = statCityTest[stateList['statecode']]['districts'][city['district']]['total']['tested']
