@@ -55,6 +55,8 @@ for state in statesData:
             'updated': state['updated'][:19],
             'type': 'state'
         }
+
+        # just to check change
         
         
         worldStateAdded.append(stateData['state'])
